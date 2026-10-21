@@ -6,6 +6,9 @@ DTSC 3602 (Fall 2026) group project.
 
 ## Dataset
 
+- **Preview in the browser:** [`data/sample_200_rows.csv`](data/sample_200_rows.csv), 200 SouthPark-brand rows that GitHub shows as a table.
+- **Full dataset (6.8 MB):** [download `rebag_all_listings.csv`](https://raw.githubusercontent.com/ebut11/dtsc3602-luxury-resale/main/data/rebag_all_listings.csv). GitHub can't preview a file this large, so it downloads instead. It opens in Excel.
+
 [`data/rebag_all_listings.csv`](data/rebag_all_listings.csv) has 25,000 resale listings collected on **October 20, 2026** from Rebag's public product feed ([shop.rebag.com/products.json](https://shop.rebag.com/products.json)). The site's `robots.txt` does not block this feed. The file is a snapshot of every listing for sale that day. About 88% were first posted in September–October 2026, and the rest were posted between August 2024 and August 2026.
 
 | Count | Listings |
