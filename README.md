@@ -56,6 +56,8 @@ Writes the five figures in [`reports/figures/`](reports/figures). They use train
 
 ### Dashboard (Supabase + Streamlit + Modal)
 
+**Live dashboard:** https://ebut11--dtsc3602-luxury-dashboard-dashboard.us-east.modal.run
+
 The dashboard reads the cleaned **training** rows from a Supabase table. The test set never goes to Supabase.
 
 1. In a Supabase project, open the SQL Editor and run [`supabase/schema.sql`](supabase/schema.sql). It creates `listings_train` with row level security and read-only public access.
