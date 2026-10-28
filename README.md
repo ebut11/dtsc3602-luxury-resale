@@ -46,6 +46,30 @@ uv run python scripts/build_excel.py data/clean docs/data_dictionary.md rebag_so
 
 `build_excel.py` makes a readable Excel workbook (training rows only) with summary, age, data dictionary and cleaning-log tabs.
 
+### EDA figures (D2)
+
+```
+uv run python scripts/eda_plots.py data/clean/train.csv reports/figures
+```
+
+Writes the five figures in [`reports/figures/`](reports/figures). They use training rows only.
+
+### Dashboard (Supabase + Streamlit + Modal)
+
+The dashboard reads the cleaned **training** rows from a Supabase table. The test set never goes to Supabase.
+
+1. In a Supabase project, open the SQL Editor and run [`supabase/schema.sql`](supabase/schema.sql). It creates `listings_train` with row level security and read-only public access.
+2. Copy `.env.example` to `.env` and fill in your project URL and keys. `.env` is git-ignored, so never commit it.
+3. Load the rows: `uv run python scripts/load_supabase.py data/clean/train.csv`
+4. Run it locally: `uv run streamlit run app/dashboard.py`
+5. Deploy on Modal. This uses only the read-only publishable key:
+   ```
+   uv run modal secret create supabase-dtsc3602 SUPABASE_URL=... SUPABASE_KEY=...
+   uv run modal deploy modal_app.py
+   ```
+
+To test without Supabase, set `LOCAL_CSV=data/clean/train.csv` before step 4. The page then says the data source is a local CSV.
+
 To collect a fresh copy of the raw data (results will differ, since Rebag's inventory changes daily):
 
 ```
