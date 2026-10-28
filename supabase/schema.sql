@@ -45,3 +45,7 @@ alter table public.listings_train enable row level security;
 drop policy if exists "Public read access" on public.listings_train;
 create policy "Public read access" on public.listings_train
     for select to anon, authenticated using (true);
+
+-- Needed when "Automatically expose new tables" is off: the dashboard may only read, the loader may write.
+grant select on public.listings_train to anon, authenticated;
+grant all on public.listings_train to service_role;
