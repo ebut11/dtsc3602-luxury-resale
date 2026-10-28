@@ -2,7 +2,9 @@
 
 DTSC 3602 (Fall 2026) group project.
 
-**Research question:** For luxury goods from brands sold in SouthPark Mall in Charlotte, NC, how well do brand, item type, condition and age predict resale value retention, compared with using the brand's median?
+**Research question:** How accurately can brand, item type, condition, and age predict the asking-price-to-estimated-retail-price ratio of luxury goods from SouthPark Mall brands listed on Rebag, compared with a brand-level median benchmark?
+
+The target is based on Rebag's **advertised asking prices**, not completed sales, so it describes how items are listed, not what buyers paid.
 
 ## Dataset
 
@@ -29,9 +31,9 @@ DTSC 3602 (Fall 2026) group project.
 | `item_type` | Handbag, Jewelry, Accessory, Shoes, Apparel, Watch |
 | `product_type` | Rebag's finer category (Totes, Wallets, ...) |
 | `condition` | Rebag grade: Fair, Good, Very Good, Great, Excellent, Pristine |
-| `resale_price` | Rebag asking price, USD |
+| `asking_price` | Rebag's advertised asking price, USD (not a completed sale) |
 | `estimated_retail_price` | Rebag's estimated retail price, USD (blank when not listed) |
-| `value_retention_pct` | **Target:** resale_price / estimated_retail_price x 100 |
+| `asking_price_ratio` | **Target:** asking_price / estimated_retail_price x 100, as a percent (e.g. 65.0 = listed at 65% of estimated retail) |
 | `production_year` | Decoded from Louis Vuitton date codes, Chanel serial numbers ([Rebag's chart](https://rebag.com/magazine/chanel-101-serial-codes)) or Hermès stamps |
 | `item_age_years` | 2026 minus production_year |
 | `year_source` | How the year was decoded. "2021 or later" means a microchipped item, with 2021 used as its year |

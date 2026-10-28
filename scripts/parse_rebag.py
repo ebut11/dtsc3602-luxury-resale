@@ -87,9 +87,9 @@ for path in sorted(glob.glob(os.path.join(raw, "page_*.json"))):
             "item_type": tag(p["tags"], "item-type-"),
             "product_type": p["product_type"],
             "condition": cond,
-            "resale_price": price,
+            "asking_price": price,
             "estimated_retail_price": retail,
-            "value_retention_pct": round(100 * price / retail, 1) if retail else None,
+            "asking_price_ratio": round(100 * price / retail, 1) if retail else None,
             "production_year": year,
             "item_age_years": CURRENT_YEAR - year if year else None,
             "year_source": how,
@@ -113,7 +113,7 @@ sp.to_csv(os.path.join(out, "rebag_southpark_brands.csv"), index=False, encoding
 
 print(f"all listings: {len(df)} | SouthPark brands: {len(sp)} | with retail price: {sp.estimated_retail_price.notna().sum()}")
 print(sp.groupby("brand").agg(listings=("listing_id", "size"), with_retail=("estimated_retail_price", "count"),
-      median_resale=("resale_price", "median"), median_retention=("value_retention_pct", "median"))
+      median_asking=("asking_price", "median"), median_ratio=("asking_price_ratio", "median"))
       .sort_values("listings", ascending=False).to_string())
 print("with production year:", sp.production_year.notna().sum(), "| year AND retail:", (sp.production_year.notna() & sp.estimated_retail_price.notna()).sum())
 print(sp.groupby("brand").production_year.agg(["count", "min", "median", "max"]).query("count > 0").to_string())
@@ -123,15 +123,15 @@ print(sp.condition.value_counts(dropna=False).head(10).to_string())
 # Readable Excel copy: SouthPark brands, plus a per-brand summary
 summary = (sp.groupby(["brand", "item_type"], dropna=False)
              .agg(listings=("listing_id", "size"), with_retail_price=("estimated_retail_price", "count"),
-                  median_resale_price=("resale_price", "median"), median_retail_price=("estimated_retail_price", "median"),
-                  median_value_retention_pct=("value_retention_pct", "median"))
+                  median_asking_price=("asking_price", "median"), median_retail_price=("estimated_retail_price", "median"),
+                  median_asking_price_ratio=("asking_price_ratio", "median"))
              .reset_index().sort_values(["brand", "listings"], ascending=[True, False]))
 aged = sp[sp.production_year.notna()].copy()
 aged["age_band"] = pd.cut(aged.item_age_years, [-1, 5, 10, 20, 100], labels=["5 or less", "6-10", "11-20", "Over 20"])
 over_time = (aged.groupby(["brand", "item_type", "age_band"], observed=True)
-                 .agg(listings=("listing_id", "size"), median_resale_price=("resale_price", "median"),
-                      listings_with_retail=("value_retention_pct", "count"),
-                      median_value_retention_pct=("value_retention_pct", "median"))
+                 .agg(listings=("listing_id", "size"), median_asking_price=("asking_price", "median"),
+                      listings_with_retail=("asking_price_ratio", "count"),
+                      median_asking_price_ratio=("asking_price_ratio", "median"))
                  .reset_index())
 with pd.ExcelWriter(os.path.join(out, "rebag_southpark_brands.xlsx"), engine="xlsxwriter") as w:
     for name, d in (("Summary", summary), ("Value Over Time", over_time), ("Listings", sp.drop(columns=["southpark_brand"]))):
