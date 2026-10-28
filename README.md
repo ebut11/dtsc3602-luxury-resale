@@ -1,4 +1,4 @@
-# Luxury Goods: Which SouthPark Mall Items Retain Their Value Over Time?
+# Luxury Goods: Asking Prices vs Retail for SouthPark Mall Brands on Rebag
 
 DTSC 3602 (Fall 2026) group project.
 
