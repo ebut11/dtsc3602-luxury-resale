@@ -17,7 +17,7 @@ We collected 25,000 listings on **October 20, 2026** from Rebag's public product
 | [`data/clean/southpark_listings_clean.csv`](https://raw.githubusercontent.com/ebut11/dtsc3602-luxury-resale/main/data/clean/southpark_listings_clean.csv) | 15,863 | Cleaned SouthPark-brand listings, with a `split` column |
 | [`data/clean/train.csv`](https://raw.githubusercontent.com/ebut11/dtsc3602-luxury-resale/main/data/clean/train.csv) | 12,557 | Rows for analysis and model development (1,839 with a target) |
 | `data/clean/test.csv` | 3,306 | **Final test set. Do not open or use until D6** (464 with a target) |
-| [`data/clean/cleaning_log.csv`](data/clean/cleaning_log.csv) | 6 | Rows removed or changed at each cleaning step |
+| [`data/clean/cleaning_log.csv`](data/clean/cleaning_log.csv) | 5 | Rows removed or changed at each cleaning step |
 
 - **[Data dictionary](docs/data_dictionary.md):** every column, its type, values and source, plus the cleaning rules.
 - **[Audit report](reports/audit_report.md):** completeness and representativeness checks.
@@ -41,7 +41,10 @@ Uses [uv](https://docs.astral.sh/uv/). Install the dependencies with `uv sync`, 
 ```
 uv run python scripts/clean_data.py data/rebag_all_listings.csv data/clean
 uv run python scripts/audit_checks.py data/clean reports/audit_report.md
+uv run python scripts/build_excel.py data/clean docs/data_dictionary.md rebag_southpark_brands.xlsx
 ```
+
+`build_excel.py` makes a readable Excel workbook (training rows only) with summary, age, data dictionary and cleaning-log tabs.
 
 To collect a fresh copy of the raw data (results will differ, since Rebag's inventory changes daily):
 
