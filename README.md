@@ -6,64 +6,52 @@ DTSC 3602 (Fall 2026) group project.
 
 The target is based on Rebag's **advertised asking prices**, not completed sales, so it describes how items are listed, not what buyers paid.
 
-## Dataset
+## Data
 
-- **Preview in the browser:** [`data/sample_200_rows.csv`](data/sample_200_rows.csv), 200 SouthPark-brand rows that GitHub shows as a table.
-- **Full dataset (6.8 MB):** [download `rebag_all_listings.csv`](https://raw.githubusercontent.com/ebut11/dtsc3602-luxury-resale/main/data/rebag_all_listings.csv). GitHub can't preview a file this large, so it downloads instead. It opens in Excel.
+We collected 25,000 listings on **October 20, 2026** from Rebag's public product feed ([shop.rebag.com/products.json](https://shop.rebag.com/products.json)). The site's `robots.txt` does not block this feed. The file is a snapshot of every listing for sale that day.
 
-[`data/rebag_all_listings.csv`](data/rebag_all_listings.csv) has 25,000 resale listings collected on **October 20, 2026** from Rebag's public product feed ([shop.rebag.com/products.json](https://shop.rebag.com/products.json)). The site's `robots.txt` does not block this feed. The file is a snapshot of every listing for sale that day. About 88% were first posted in September–October 2026, and the rest were posted between August 2024 and August 2026.
+| File | Rows | What it is |
+| --- | --- | --- |
+| [`data/sample_200_rows.csv`](data/sample_200_rows.csv) | 200 | Preview of the cleaned training data that GitHub shows as a table |
+| [`data/rebag_all_listings.csv`](https://raw.githubusercontent.com/ebut11/dtsc3602-luxury-resale/main/data/rebag_all_listings.csv) | 25,000 | Raw listings, all brands (6.8 MB; downloads instead of previewing) |
+| [`data/clean/southpark_listings_clean.csv`](https://raw.githubusercontent.com/ebut11/dtsc3602-luxury-resale/main/data/clean/southpark_listings_clean.csv) | 15,863 | Cleaned SouthPark-brand listings, with a `split` column |
+| [`data/clean/train.csv`](https://raw.githubusercontent.com/ebut11/dtsc3602-luxury-resale/main/data/clean/train.csv) | 12,557 | Rows for analysis and model development (1,839 with a target) |
+| `data/clean/test.csv` | 3,306 | **Final test set. Do not open or use until D6** (464 with a target) |
+| [`data/clean/cleaning_log.csv`](data/clean/cleaning_log.csv) | 6 | Rows removed or changed at each cleaning step |
 
-| Count | Listings |
-| --- | --- |
-| All listings | 25,000 |
-| Brands sold at SouthPark (`southpark_brand = True`) | 15,888 |
-| SouthPark brands with an estimated retail price | 2,317 |
-| SouthPark brands with a decoded production year | 5,197 |
+- **[Data dictionary](docs/data_dictionary.md):** every column, its type, values and source, plus the cleaning rules.
+- **[Audit report](reports/audit_report.md):** completeness and representativeness checks.
 
-### Columns
+### Final test set
 
-| Column | Description |
-| --- | --- |
-| `listing_id` | Rebag product ID |
-| `brand` | Designer |
-| `southpark_brand` | True if the brand has a store at SouthPark Mall |
-| `model` | Item model name |
-| `item_type` | Handbag, Jewelry, Accessory, Shoes, Apparel, Watch |
-| `product_type` | Rebag's finer category (Totes, Wallets, ...) |
-| `condition` | Rebag grade: Fair, Good, Very Good, Great, Excellent, Pristine |
-| `asking_price` | Rebag's advertised asking price, USD (not a completed sale) |
-| `estimated_retail_price` | Rebag's estimated retail price, USD (blank when not listed) |
-| `asking_price_ratio` | **Target:** asking_price / estimated_retail_price x 100, as a percent (e.g. 65.0 = listed at 65% of estimated retail) |
-| `production_year` | Decoded from Louis Vuitton date codes, Chanel serial numbers ([Rebag's chart](https://rebag.com/magazine/chanel-101-serial-codes)) or Hermès stamps |
-| `item_age_years` | 2026 minus production_year |
-| `year_source` | How the year was decoded. "2021 or later" means a microchipped item, with 2021 used as its year |
-| `brand_code` | Raw date code or serial from the listing |
-| `exterior_material`, `exterior_color`, `hardware_color` | Item details |
-| `accessories` | Extras included (dust bag, strap, authenticity card, ...). Blank means unknown, not none |
-| `size` | Size tag, when given |
-| `available` | Whether the item was still for sale at collection |
-| `listed_at` | Date Rebag first posted the listing |
-| `dropship_partner` | True for partner listings, which have shorter descriptions |
-| `url` | Link to the listing |
+The test set is 20% of bag models, chosen at random (seed 3602) so that no model appears in both `train.csv` and `test.csv`. All exploration, plots and model choices use `train.csv` only. The test set is used once, in D6, to evaluate the frozen model and the brand-median benchmark.
 
 ### Known limitations
 
-- Prices are asking prices, not final sale prices. Older listings may include markdowns.
-- `estimated_retail_price` is Rebag's estimate and likely reflects today's retail price, not the original purchase price.
-- Production year is only available for Louis Vuitton, Chanel and Hermès.
+- Prices are advertised asking prices, not completed sales. Older listings may include markdowns.
+- Only 14.5% of rows have an estimated retail price, and all of them are partner (dropship) listings.
+- `estimated_retail_price` is Rebag's estimate and likely reflects today's retail price; the ratio never exceeds 83.3%.
+- Production year is only available for Louis Vuitton and Chanel.
 - Data is used for coursework only. Rebag is the source of all listing data.
 
-## Reproducing the data
+## Running the project
 
-Requires Python 3 with pandas and xlsxwriter.
+Uses [uv](https://docs.astral.sh/uv/). Install the dependencies with `uv sync`, then:
 
 ```
-python scripts/crawl_shopify.py https://shop.rebag.com raw/rebag
-python scripts/parse_rebag.py raw/rebag data
+uv run python scripts/clean_data.py data/rebag_all_listings.csv data/clean
+uv run python scripts/audit_checks.py data/clean reports/audit_report.md
 ```
 
-`crawl_shopify.py` downloads the feed 250 listings per page, waiting 1.5 seconds between requests. Shopify stops at page 100, so the crawl returns up to 25,000 listings. `parse_rebag.py` turns the raw pages into the CSV. A new crawl will return different listings, since Rebag's inventory changes daily.
+To collect a fresh copy of the raw data (results will differ, since Rebag's inventory changes daily):
+
+```
+uv run python scripts/crawl_shopify.py https://shop.rebag.com raw/rebag
+uv run python scripts/parse_rebag.py raw/rebag data
+```
+
+`crawl_shopify.py` downloads the feed 250 listings per page, waiting 1.5 seconds between requests. Shopify stops at page 100, so the crawl returns up to 25,000 listings. `parse_rebag.py` turns the raw pages into the CSV.
 
 ## AI disclosure
 
-The data collection and cleaning scripts were written with Claude Code (Anthropic), within the course AI policy.
+The data collection, cleaning and audit scripts were written with Claude Code (Anthropic), within the course AI policy.

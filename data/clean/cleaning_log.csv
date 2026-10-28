@@ -1,0 +1,6 @@
+step,rows_before,rows_after,rows_affected,note
+Keep SouthPark brands,25000,15888,9112,Brands with a store at SouthPark Mall
+Drop Outlet items,15888,15867,21,"New outlet stock, not resale listings"
+Drop duplicate relistings,15867,15863,4,"Same brand, model, date code, price and condition; kept the earliest"
+Flag possible duplicates,15863,15863,97,"Microchipped items with identical model, price and condition"
+Blank implausible retail prices,15863,15863,1,"Ratio under 5% (e.g. a $871,750 retail estimate on a necklace)"
