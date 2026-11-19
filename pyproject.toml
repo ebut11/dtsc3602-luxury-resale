@@ -3,15 +3,20 @@ name = "dtsc3602-luxury-resale"
 version = "0.1.0"
 requires-python = ">=3.13"
 dependencies = [
+    "fastapi>=0.165.0",
+    "httpx>=0.28.1",
+    "joblib>=1.6.0",
     "matplotlib>=3.11.2",
     "modal>=1.6.3",
     "openpyxl>=3.1.5",
     "pandas>=3.1.0",
     "plotly>=7.1.0",
+    "pytest>=9.2.0",
     "python-dotenv>=1.2.4",
     "scikit-learn>=1.9.1",
     "streamlit>=1.66.1",
     "supabase>=2.33.0",
     "tabulate>=0.10.0",
+    "uvicorn[standard]>=0.54.0",
     "xlsxwriter>=3.3.0",
 ]

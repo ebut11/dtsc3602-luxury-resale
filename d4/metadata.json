@@ -1,0 +1,56 @@
+{
+  "model_name": "luxury-asking-ratio-ridge",
+  "model_version": "1.1.0",
+  "built_at": "2026-11-19T18:53:14+00:00",
+  "sklearn_version": "1.9.1",
+  "python_version": "3.14.3",
+  "steps": [
+    "prepare",
+    "encode",
+    "model"
+  ],
+  "raw_features": [
+    "brand",
+    "item_type",
+    "condition",
+    "age_band",
+    "estimated_retail_price"
+  ],
+  "target": "asking_price_ratio: Rebag asking price / estimated retail price x 100",
+  "target_note": "Advertised asking price on Rebag partner listings, not a sale price.",
+  "training_rows": 1839,
+  "training_file": "data/clean/train.csv (rows with a target); test.csv untouched until D6",
+  "estimator": "Ridge(alpha=1.0) on one-hot brand/item_type/condition/age_band + log retail price",
+  "learned_by_transformer": {
+    "brand_levels": [
+      "Balenciaga",
+      "Burberry",
+      "Chanel",
+      "Gucci",
+      "Louis Vuitton",
+      "Saint Laurent",
+      "Tiffany & Co."
+    ],
+    "item_type_levels": [
+      "Accessory",
+      "Handbag",
+      "Jewelry",
+      "Shoes"
+    ],
+    "retail_bounds": [
+      700.0,
+      11000.0
+    ]
+  },
+  "prediction_cap": [
+    0.0,
+    83.3
+  ],
+  "cv": {
+    "method": "5-fold GroupKFold by model_group, shuffle seed 3602",
+    "model_mae": 10.58,
+    "model_mae_fold_sd": 0.22,
+    "baseline_mae": 12.33,
+    "target_mean": 60.64
+  }
+}
